@@ -21,6 +21,17 @@ class TextBox(BaseVisual):
         super().__init__(raw_data)
         self.text = raw_data['config']['singleVisual']['objects']['general'][0]['properties']['paragraphs']
 
+    def __dict__(self):
+        return {
+            "config": json.dumps(self._config),
+            "height": self.height,
+            "width": self.width,
+            "x": self.position['x'],
+            "y": self.position['y'],
+            "z": self.position['z'],
+            "filters": json.dumps(self.filters),
+        }
+
 
 visuals = {
     'textbox': TextBox

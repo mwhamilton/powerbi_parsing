@@ -39,9 +39,12 @@ class Section:
             'displayName': self.display_name,
             'filters': self.filters,
             'ordinal': self.ordinal,
-            'visualContainers': self.visualContainers,
+            'visualContainers': [x.__dict__() for x in self.visualContainers],
             'config': self.config,
             'displayOption': self.dispay_option,
             'width': self.dimensions['width'],
             'height': self.dimensions['height'],
         }
+
+    def __str__(self):
+        return str(self.__dict__)
