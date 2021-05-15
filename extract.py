@@ -52,4 +52,5 @@ class PowerBI:
 
 
 powerbi = PowerBI('test.pbit')
-pprint(powerbi.get_layout())
+page = powerbi.get_layout().sections[0]
+print(page)
