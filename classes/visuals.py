@@ -3,7 +3,7 @@ from pprint import pprint
 
 
 class BaseVisual:
-    def __init__(self, raw_data):
+    def __init__(self, raw_data) -> None:
         self._config = raw_data['config']
         self.height = raw_data['height']
         self.width = raw_data['width']
@@ -27,9 +27,9 @@ visuals = {
 }
 
 
-def parse_visual(raw_data):
+def parse_visual(raw_data: dict) -> BaseVisual:
     raw_data['config'] = json.loads(raw_data['config'])
-    visuals.get(
+    return visuals.get(
         raw_data['config']['singleVisual']['visualType'],
         BaseVisual
     )(raw_data)
