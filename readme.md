@@ -1,0 +1,1 @@
+This is the beginning (hopefully) of a package that can parse PowerBI templates, allow one to edit them programmatically. Will hopefully form the basis of other libraries and scripts written to edit PowerBIs at a higher level.

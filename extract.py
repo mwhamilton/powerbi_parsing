@@ -3,6 +3,7 @@ import zipfile
 import json
 from bs4 import BeautifulSoup
 from pprint import pprint
+from classes import layout
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -24,7 +25,8 @@ class PowerBI:
         return json.loads(self.zip.open('DiagramLayout').read().decode('utf-16-le'))
 
     def get_layout(self):
-        return json.loads(self.zip.open('Report/Layout').read().decode('utf-16-le'))
+        raw_data = json.loads(self.zip.open('Report/Layout').read().decode('utf-16-le'))
+        return layout.Layout(raw_data)
 
     def get_metadata(self):
         return json.loads(self.zip.open('Metadata', 'r').read().decode('utf-16-le'))
@@ -50,3 +52,4 @@ class PowerBI:
 
 
 powerbi = PowerBI('test.pbit')
+pprint(powerbi.get_layout())
