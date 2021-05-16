@@ -6,7 +6,7 @@ class Layout:
     def __init__(self, raw_data: dict) -> None:
         self.id = raw_data['id']
         self.resourcePackages = raw_data['resourcePackages']
-        self.sections = [Section(raw_section_data) for raw_section_data in raw_data['sections'][1:]]
+        self.sections = [Section(raw_section_data) for raw_section_data in raw_data['sections']]
         self.config = raw_data['config']
         self.layoutOptimization = raw_data['layoutOptimization']
 

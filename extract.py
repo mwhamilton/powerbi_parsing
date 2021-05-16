@@ -1,7 +1,7 @@
 import os
 import zipfile
 import json
-from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
 from pprint import pprint
 from classes import layout
 from typing import List
@@ -25,17 +25,15 @@ class PowerBI:
         return zipfile.ZipFile(self.file_path, "r")
 
     def _get_content_types(self):
-        return BeautifulSoup(self.zip.open('[Content_Types].xml').read().decode('utf-8'), 'lxml')
+        return ET.fromstring(self.zip.open('[Content_Types].xml').read().decode('utf-8'))
 
     def _save_content_types(self, zip):
-        # x = self.zip.open('[Content_Types].xml').read()
-        # y = b'\xef\xbb\xbf' + str(self.content_types).encode("utf-8")[12:-14]
-        # print(x == y)
-        # print(x)
-        # print(y)
-        # exit()
-        zip.open('[Content_Types].xml', 'w').write(self.zip.open('[Content_Types].xml').read())
-        # zip.open('[Content_Types].xml', 'w').write(b'\xef\xbb\xbf' + str(self.content_types).encode("utf-8"))
+        x = self.zip.open('[Content_Types].xml').read()
+        y = b'\xef\xbb\xbf' + ET.tostring(self.content_types, encoding='utf8', method='xml') \
+                                .replace(b"ns0:", b"") \
+                                .replace(b":ns0", b"") \
+                                .replace(b"utf8", b"utf-8")
+        zip.open('[Content_Types].xml', 'w').write(y)
 
     def _get_data_model_schema(self) -> dict:
         return json.loads(self.zip.open('DataModelSchema').read().decode('utf-16-le'))
