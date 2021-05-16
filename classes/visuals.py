@@ -1,6 +1,6 @@
 import json
 from pprint import pprint
-
+from . import utils
 
 class BaseVisual:
     def __init__(self, raw_data) -> None:
@@ -14,13 +14,6 @@ class BaseVisual:
         }
         self.filters = json.loads(raw_data['filters'])
 
-
-class TextBox(BaseVisual):
-    def __init__(self, raw_data) -> None:
-        self.visual_type = 'textbox'
-        super().__init__(raw_data)
-        self.text = raw_data['config']['singleVisual']['objects']['general'][0]['properties']['paragraphs']
-
     def __dict__(self):
         return {
             "config": json.dumps(self._config),
@@ -33,13 +26,43 @@ class TextBox(BaseVisual):
         }
 
 
+class TextBox(BaseVisual):
+    def __init__(self, raw_data) -> None:
+        self.visual_type = 'textbox'
+        super().__init__(raw_data)
+        self.text = raw_data['config']['singleVisual']['objects']['general'][0]['properties']['paragraphs']
+
+
+class TableEx(BaseVisual):
+    def __init__(self, raw_data) -> None:
+        self.visual_type = 'table'
+        super().__init__(raw_data)
+
+
+class ColumnChart(BaseVisual):
+    def __init__(self, raw_data) -> None:
+        super().__init__(raw_data)
+        self.legend = self._config['singleVisual']['projections']['Series'][0]['queryRef']
+        self.y_axis = self._config['singleVisual']['projections']['Y'][0]['queryRef']
+        self.x_axis = self._config['singleVisual']['projections']['Category'][0]['queryRef']
+        self.title = self._get_title()
+    
+    def _get_title(self):
+        if 'vcObjects' in self._config['singleVisual']:
+            return utils.Text(self._config['singleVisual']['vcObjects']['title'][0]['properties']['text']).text
+
+
 visuals = {
-    'textbox': TextBox
+    'textbox': TextBox,
+    'tableEx': TableEx,
+    'columnChart': ColumnChart,
 }
 
 
 def parse_visual(raw_data: dict) -> BaseVisual:
     raw_data['config'] = json.loads(raw_data['config'])
+    if raw_data['config']['singleVisual']['visualType'] not in visuals:
+        print(raw_data['config']['singleVisual']['visualType'])
     return visuals.get(
         raw_data['config']['singleVisual']['visualType'],
         BaseVisual
