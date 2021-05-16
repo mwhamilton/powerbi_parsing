@@ -3,7 +3,7 @@ import zipfile
 import json
 import xml.etree.ElementTree as ET
 from pprint import pprint
-from classes import layout
+from classes import layout, data_model_schema
 from typing import List
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -36,7 +36,7 @@ class PowerBI:
         zip.open('[Content_Types].xml', 'w').write(y)
 
     def _get_data_model_schema(self) -> dict:
-        return json.loads(self.zip.open('DataModelSchema').read().decode('utf-16-le'))
+        return data_model_schema.DataModelSchema(json.loads(self.zip.open('DataModelSchema').read().decode('utf-16-le')))
 
     def _save_data_model_schema(self, zip):
         zip.open('DataModelSchema', 'w').write(json.dumps(self.data_model_schema).encode("utf-16-le"))
@@ -104,4 +104,5 @@ class PowerBI:
             self._save_content_types(zip)
 
 powerbi = PowerBI('test.pbit')
+pprint(powerbi.data_model_schema)
 powerbi.save("test_out.pbit")
