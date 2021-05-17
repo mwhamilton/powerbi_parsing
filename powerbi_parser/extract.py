@@ -3,9 +3,8 @@ import zipfile
 import json
 import xml.etree.ElementTree as ET
 from pprint import pprint
-from classes import layout, data_model_schema
+from .classes import layout, data_model_schema
 from typing import List
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class PowerBI:

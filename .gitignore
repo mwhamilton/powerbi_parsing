@@ -1,3 +1,5 @@
 *.pbit
 *.pyc
 *.xlsx
+dist
+powerbi_parser.egg-info
