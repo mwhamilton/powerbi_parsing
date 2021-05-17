@@ -36,16 +36,17 @@ class PowerBI:
         zip.open('[Content_Types].xml', 'w').write(y)
 
     def _get_data_model_schema(self) -> dict:
-        return data_model_schema.DataModelSchema(json.loads(self.zip.open('DataModelSchema').read().decode('utf-16-le')))
+        raw_data = json.loads(self.zip.open('DataModelSchema').read().decode('utf-16-le'))
+        return data_model_schema.DataModelSchema(raw_data)
 
     def _save_data_model_schema(self, zip):
-        zip.open('DataModelSchema', 'w').write(json.dumps(self.data_model_schema).encode("utf-16-le"))
+        zip.open('DataModelSchema', 'w').write(json.dumps(self.data_model_schema.__dict__()).encode("utf-16-le"))
 
     def _get_diagram_layout(self) -> dict:
         return json.loads(self.zip.open('DiagramLayout').read().decode('utf-16-le'))
 
     def _save_diagram_layout(self, zip):
-        zip.open('DiagramLayout', 'w').write(json.dumps(self.data_model_schema).encode("utf-16-le"))
+        zip.open('DiagramLayout', 'w').write(json.dumps(self.diagram_layout).encode("utf-16-le"))
        
     def _get_layout(self) -> layout.Layout:
         raw_data = json.loads(self.zip.open('Report/Layout').read().decode('utf-16-le'))
@@ -102,7 +103,3 @@ class PowerBI:
             self._save_diagram_layout(zip)
             self._save_data_model_schema(zip)
             self._save_content_types(zip)
-
-powerbi = PowerBI('test.pbit')
-pprint(powerbi.data_model_schema)
-powerbi.save("test_out.pbit")
