@@ -22,6 +22,9 @@ class DataModelSchema:
             'model': self.model.__dict__(),
         }
 
+    def __str__(self):
+        return str(self.__dict__())
+
 
 class Model:
     def __init__(self, raw_data) -> None:
@@ -50,6 +53,9 @@ class Model:
             'tables': [x.__dict__() for x in self.tables],
         }
 
+    def __str__(self):
+        return str(self.__dict__())
+
 
 class Table:
     def __init__(self, raw_data) -> None:
@@ -76,3 +82,34 @@ class Table:
             'partitions': self.partitions,
             'structureModifiedTime': self.structured_modified_time,
         }
+
+    def __str__(self):
+        return str(self.__dict__())
+
+
+class Expression:
+    def __init__(self, config):
+        self.config = config
+        self.sources = self._get_sources()
+    
+    def _get_sources(self):
+        def get_all_keys(d):
+            for key, value in d.items():
+                if key == 'Column':
+                    yield d
+                if isinstance(value, dict):
+                    yield from get_all_keys(value)
+
+        sources = []
+        for source in get_all_keys(self.config):
+            sources.append({
+                'table': source['Column']['Expression']['SourceRef']['Entity'],
+                'column': source['Column']['Property']
+            })
+        return sources
+
+    def __dict__(self):
+        return self.config
+
+    def __str__(self):
+        return str(self.__dict__())

@@ -92,6 +92,12 @@ class PowerBI:
     def _save_version(self, zip) -> None:
         zip.open('Version', 'w').write(self.version.encode("utf-16-le"))
 
+    def list_visuals(self):
+        visuals = []
+        for section in self.layout.sections:
+            visuals.extend(section.visualContainers)
+        return visuals
+
     def save(self, file_path: str) -> None:
         with zipfile.ZipFile(file_path, 'w') as zip:
             self._save_version(zip)

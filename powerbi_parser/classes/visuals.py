@@ -1,6 +1,6 @@
 import json
 from pprint import pprint
-from . import utils
+from . import utils, data_model_schema
 
 class BaseVisual:
     def __init__(self, raw_data) -> None:
@@ -13,6 +13,17 @@ class BaseVisual:
             'z': raw_data['z'],
         }
         self.filters = json.loads(raw_data['filters'])
+        self.dependencies = self._get_dependencies(raw_data)
+
+    def _get_dependencies(self, raw_data):
+        dependencies = []
+        if 'dataTransforms' in raw_data:
+            for data_element in json.loads(raw_data['dataTransforms'])['selects']:
+                dependencies.extend(data_model_schema.Expression(data_element['expr']).sources)
+        if 'filters' in raw_data:
+            for data_element in json.loads(raw_data['filters']):
+                dependencies.extend(data_model_schema.Expression(data_element['expression']).sources)
+        return dependencies
 
     def __dict__(self):
         return {
@@ -24,6 +35,9 @@ class BaseVisual:
             "z": self.position['z'],
             "filters": json.dumps(self.filters),
         }
+
+    def __str__(self):
+        return str(self.__dict__())
 
 
 class TextBox(BaseVisual):
