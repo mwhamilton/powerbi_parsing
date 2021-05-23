@@ -1,11 +1,10 @@
-from distutils.core import setup
 import setuptools
-import os
+import powerbi_parser
 
 
 setuptools.setup(
     name='powerbi_parser',
-    version='0.0.1',
+    version=powerbi_parser.__version__,
     author='Matthew Hamilton',
     author_email='mwhamilton6@gmail.com',
     description="A package to handle powerbi parsing",

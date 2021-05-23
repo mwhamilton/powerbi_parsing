@@ -1,0 +1,3 @@
+from .extract import PowerBI
+
+__version__ = '0.0.2'
