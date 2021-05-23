@@ -1,7 +1,5 @@
 from pprint import pprint
-import re 
-basic_source = re.compile(" [^ ']+?\[.+?\]")  # matches " positions[salary]" in "aslkdm salkdj positions[salary] * 2"
-with_spaces_source = re.compile("'[^']+'\[.+?\]")  # matches 
+from . import utils
 
 
 class DataModelSchema:
@@ -69,6 +67,7 @@ class Table:
         self.is_hidden = raw_data.get('isHidden', False)
         self.is_private = raw_data.get('isPrivate', False)
         self.lineage_tag = raw_data['lineageTag']
+        self.measures = raw_data.get('measures', [])
         self.name = raw_data['name']
         self.partitions = raw_data['partitions']
         self.structured_modified_time = raw_data['structureModifiedTime']
@@ -90,24 +89,24 @@ class Table:
         return str(self.__dict__())
 
     def list_calc_col_dependencies(self):
-        def parse_source(source):
-            table, col = source.split('[')
-            table = table.strip("'")  # tables with spaces will be surrounded by single quotes
-            col = col[:-1]  # the col begins and ends with []. We removed the first in the split, but still need to remove the last
-            return {
-                'table': table,
-                'column': col
-            }
-
         sources = []
         for col in self.columns:
             if 'expression' in col:
                 col_sources = []
-                for source_re in [basic_source, with_spaces_source]:
-                    col_sources.extend(re.findall(source_re, col['expression']))
                 sources.append({
                     'name': col['name'],
-                    'sources': [parse_source(x) for x in col_sources]
+                    'sources': utils.extract_sources_from_dax(col['expression'])
+                })
+        return sources
+
+    def list_measure_dependencies(self):
+        sources = []
+        for measure in self.measures:
+            if 'expression' in measure:
+                col_sources = []
+                sources.append({
+                    'name': measure['name'],
+                    'sources': utils.extract_sources_from_dax(measure['expression'])
                 })
         return sources
 
