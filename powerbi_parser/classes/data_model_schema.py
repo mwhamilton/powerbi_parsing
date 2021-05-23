@@ -1,5 +1,5 @@
 from pprint import pprint
-from . import utils
+from . import utils, external_sources
 
 
 class DataModelSchema:
@@ -61,6 +61,7 @@ class Model:
 class Table:
     def __init__(self, raw_data) -> None:
         self.raw_data = raw_data
+        self.sources = [external_sources.parse_source(x) for x in raw_data['partitions']]
         self.annotations = raw_data['annotations']
         self.columns = raw_data['columns']
         self.hierarchies = raw_data.get('hierarchies', [])
