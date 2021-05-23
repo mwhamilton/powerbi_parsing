@@ -1,4 +1,7 @@
 from pprint import pprint
+import re 
+basic_source = re.compile(" [^ ']+?\[.+?\]")  # matches " positions[salary]" in "aslkdm salkdj positions[salary] * 2"
+with_spaces_source = re.compile("'[^']+'\[.+?\]")  # matches 
 
 
 class DataModelSchema:
@@ -85,6 +88,28 @@ class Table:
 
     def __str__(self):
         return str(self.__dict__())
+
+    def list_calc_col_dependencies(self):
+        def parse_source(source):
+            table, col = source.split('[')
+            table = table.strip("'")  # tables with spaces will be surrounded by single quotes
+            col = col[:-1]  # the col begins and ends with []. We removed the first in the split, but still need to remove the last
+            return {
+                'table': table,
+                'column': col
+            }
+
+        sources = []
+        for col in self.columns:
+            if 'expression' in col:
+                col_sources = []
+                for source_re in [basic_source, with_spaces_source]:
+                    col_sources.extend(re.findall(source_re, col['expression']))
+                sources.append({
+                    'name': col['name'],
+                    'sources': [parse_source(x) for x in col_sources]
+                })
+        return sources
 
 
 class Expression:
